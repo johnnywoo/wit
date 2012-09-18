@@ -1,0 +1,18 @@
+Just a basic heap of everything.
+
+{1 + 2}
+{-1--1}
+
+{-1 - -1 }
+{-1
+	-
+	-1
+}
+
+This should not work:
+{ -1}
+{
+-1
+}
+{-
+1}
