@@ -1,4 +1,4 @@
-# WTF Syntax
+# WTF syntax
 
 ## Variables: $foo
 
@@ -161,15 +161,14 @@ Script tag body is treated as a literal block:
     script
         var a = "It's not a <var> tag"
 
-Style tag body ignores tag syntax, while commands, variables and expressions
-continue working:
+Style tag body ignores everything except variables:
 
     style
         td { /* no syntax error here */
         	color: $color; /* variable value will be used */
         }
 
-??? table {blah: syntax error. no such command}
+??? we want expressions!
 
 ## Quoting
 
@@ -215,6 +214,9 @@ enclose the text in a literal expression:
 There will be much more markup than text, so it's justified to apply the
 special syntax to the latter. Also we only allow latin letters in tags,
 so non-latin languages such as Russian get away scot-free!
+
+    Another useful trick is to put an empty expression at the start of
+    {} the line. This prevents it from being parsed as a html tag.
 
 ## Operators
 
@@ -324,8 +326,8 @@ not from indentation! This enables a useful trick to lower nesting:
        thead
            tr
                <td>
-        This is still inside of the wrapper table, but now we don't have to
-        = indent our whole template by a half-screen.
+	This is still inside of the wrapper table, but now we don't have to
+	{} indent our whole template by a half-screen.
 
     div
         There we go! The div is still inside of the table.

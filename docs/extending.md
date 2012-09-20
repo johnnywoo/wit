@@ -37,8 +37,6 @@ literal arguments will make the compiler replace the call with its result.
 
 ## Definitions
 
-The grammar can be found in `wtf.hatchet`.
-
 ??? more info here
 
  * Quotes syntax, lists of special symbols and \xAB possibilities

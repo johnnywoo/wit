@@ -1,0 +1,70 @@
+#!/usr/bin/env php
+<?php
+
+function nice_unlink($file)
+{
+	if(file_exists($file))
+		unlink($file);
+}
+
+foreach(glob(__DIR__ . '/blackbox_*.phpt') as $fname)
+{
+	$base = substr($fname, 0, -5);
+	nice_unlink($fname);
+	nice_unlink($base.'.diff');
+	nice_unlink($base.'.exp');
+	nice_unlink($base.'.log');
+	nice_unlink($base.'.out');
+	nice_unlink($base.'.php');
+}
+
+foreach(glob(__DIR__ . '/blackbox/*.test') as $fname)
+{
+	$name = basename($fname);
+
+	$text = file_get_contents($fname);
+	$matches = preg_split("/^--([A-Z0-9]+)--(?:\n|$)/m", $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+	array_unshift($matches, 'FILE');
+
+	$sections = array();
+	foreach($matches as $i => $section)
+	{
+		// iterate over pairs
+		if($i % 2)
+			continue;
+		$sections[$section] = $matches[$i + 1];
+	}
+
+	$json = isset($sections['INPUT']) ? trim($sections['INPUT']) : '';
+
+	$input  = strlen($json) ? json_decode($json, true) : array();
+	$file   = $sections['FILE'];
+	$expect = isset($sections['EXPECT']) ? $sections['EXPECT'] : 'ok';
+	$is_expect_vague = !isset($sections['EXPECT']);
+
+	$phpt =
+'--TEST--
+'.$name.'
+--FILE--
+<?php
+$template = '.var_export($file, true).';
+$input    = '.var_export($input, true).';
+try
+{
+	$output = "magic";
+
+	echo '.($is_expect_vague ? '"ok"' : '$output').';
+}
+catch(Exception $e)
+{
+	echo get_class($e).": ".$e->getMessage()."\n";
+	exit(1);
+}
+?>
+--EXPECT--
+'.$expect;
+
+	$phpt_fname = __DIR__ . '/blackbox_' . basename($fname, '.test') . '.phpt';
+	file_put_contents($phpt_fname, $phpt);
+	echo $phpt_fname . "\n";
+}

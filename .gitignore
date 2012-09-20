@@ -1,2 +1,9 @@
 .DS_Store
 /.idea
+/tests/*.diff
+/tests/*.exp
+/tests/*.log
+/tests/*.out
+/tests/*.php
+/tests/blackbox_*.phpt
+run-tests.log
