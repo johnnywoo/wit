@@ -1,11 +1,11 @@
-# Library of WTF commands
+# Library of Wit commands
 
 Remember that last argument is input and is interchangeable with an inner block
 or an incoming pipeline.
 
 Special placeholders used below:
 
- * `<variable>` means a variable name with the $ sign, e.g. `$foo` or `$a.b.c`.
+ * `<variable>` means a variable name with the `$` sign, e.g. `$foo` or `$a.b.c`.
  * `<condition>` means a value expression without curly braces, e.g. `1 + 2`.
    Expressions allow nesting, so `{1 + 2}` is also a valid `<condition>`.
 
@@ -18,6 +18,8 @@ Square brackets define optional elements.
     IF <condition> <input>
     ELSE [if <condition>] <input>
 
+We need support for inline {if cond input}
+
 ### for
 
     FOR <array> [as <variable>] [key <variable>] [glue <value>] <input>
@@ -26,6 +28,21 @@ Default variable name for value is `$it`. There is no default name for key
 variable.
 
 Glue will be output between iterations.
+
+    FOR $a
+        table
+            ITEM > tr
+                td
+    GLUE
+        tr > td > hr
+    ELSE
+        tr > td > Nope
+
+    FOR $a
+        tr
+            td
+    WRAP
+        table > SLOT
 
 ### ??? list
 
@@ -73,7 +90,7 @@ Does not allow input.
 ??? down
 
     SOMETHING template-name
-        This will be wrapped into a template (using default slot).
+      This will be wrapped into a template (using default slot).
 
 ### extend
 
@@ -98,14 +115,21 @@ Used with `extends` and `wrap`.
 
 Defines syntax for a block/value.
 
-    SYNTAX in tag <tag> [attribute <attribute>]
+    SYNTAX <syntax> in tag <tag> [attribute <attribute>]
 
 Marks a tag as having certain syntax inside. If attributes are supplied,
 marks values of those attributes instead.
 
-    SYNTAX in attribute <attribute>
+    SYNTAX <syntax> in attribute <attribute>
 
 Marks an attribute of any tag as having certain syntax.
+
+???
+
+    SYNTAX css +statements
+
+### text
+### literal
 
 ### file-syntax
 
@@ -120,9 +144,15 @@ Defines syntax for current template file. Does not allow input.
 ### set
 
     SET <variable> [and echo] [lines of] <value>
+    SET <variable> (+= | -= | *= | /= | %=) <value>
 
 Assigns a value to a variable. If `lines of` is given, splits input into lines
 and collects trimmed strings into an array.
+
+???
+
+    SET <variable> as <type>
+      kek
 
 ### json
 
@@ -152,13 +182,11 @@ Produces a script tag with the value:
 
 ### trim
 
-	TRIM $string
-	TRIM left $string
-	TRIM right $string
+    TRIM [left | right] $string
 
 ### ...
 
-upper, lower
+uppercase, lowercase, ucfirst
 date
 
 ## Array manipulation
@@ -174,7 +202,7 @@ arrays with similar objects). E.g. if you have a list of persons, you might
 want to do something like this:
 
     ul > FOR {$persons | sort by name} as $person
-        li > $person.name works as a $person.position
+      li > $person.name works as a $person.position
 
 ### keys
 
@@ -183,11 +211,11 @@ want to do something like this:
 Returns a list of keys of the array. Keys of the new array will be numeric
 starting from 0.
 
-Using inner block input will result in an array
+??? Using inner block input will result in an array
 
-### make-list
+### array
 
-    MAKE-LIST {<item>}
+    ARRAY {<item>}
 
 Returns an array with arguments. Keys of the array will be numeric starting
 from 0.
@@ -195,11 +223,13 @@ from 0.
 Does not allow input.
 
     table#calendar
-        thead > tr > FOR {make-list Mo Tu We Th Fr Sa Su} > th $it
+      thead > tr > FOR {array Mo Tu We Th Fr Sa Su} > th $it
 
+### count
+
+    COUNT <array>
 
 filter
 ??? map
 head, tail
 array operators?
-count {$a | count}

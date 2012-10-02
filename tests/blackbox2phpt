@@ -1,6 +1,19 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * Phpt converter for blackbox tests
+ *
+ * Creates a blackbox_*.phpt file in currect directory for every
+ * blackbox/*.test. Obsolete phpt files will be removed.
+ *
+ * phpt is a test file format for testing framework of PEAR.
+ * This script takes blackbox tests (which are implementation-agnostic)
+ * and converts them into phpt files, which we can then actually run
+ * with pyrus and therefore test our PHP implementation of Wit, along
+ * with implementation-specific tests which are already written as phpt.
+ */
+
 function nice_unlink($file)
 {
 	if(file_exists($file))
@@ -23,7 +36,7 @@ foreach(glob(__DIR__ . '/blackbox/*.test') as $fname)
 	$name = basename($fname);
 
 	$text = file_get_contents($fname);
-	$matches = preg_split("/^--([A-Z0-9]+)--(?:\n|$)/m", $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+	$matches = preg_split("/^--([^\s-]+)--(?:\n|$)/m", $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 	array_unshift($matches, 'FILE');
 
 	$sections = array();
@@ -35,12 +48,15 @@ foreach(glob(__DIR__ . '/blackbox/*.test') as $fname)
 		$sections[$section] = $matches[$i + 1];
 	}
 
-	$json = isset($sections['INPUT']) ? trim($sections['INPUT']) : '';
+	$json  = isset($sections['INPUT']) ? trim($sections['INPUT']) : '';
+	$input = strlen($json) ? json_decode($json, true) : array();
 
-	$input  = strlen($json) ? json_decode($json, true) : array();
-	$file   = $sections['FILE'];
-	$expect = isset($sections['EXPECT']) ? $sections['EXPECT'] : 'ok';
+	$file = $sections['FILE'];
+
+	if(!isset($sections['EXPECT']) && isset($sections['EXPECT-ERROR']))
+		$sections['EXPECT'] = $sections['EXPECT-ERROR'];
 	$is_expect_vague = !isset($sections['EXPECT']);
+	$expect = $is_expect_vague ? (isset($sections['EXPECT-ERROR']) ? 'error' : 'ok') : $sections['EXPECT'];
 
 	$phpt =
 '--TEST--
@@ -55,9 +71,14 @@ try
 
 	echo '.($is_expect_vague ? '"ok"' : '$output').';
 }
+catch(wit\Exception $e)
+{
+	echo '.($is_expect_vague ? '"error"' : '$e->getMessage()."\n"').';
+	exit(1);
+}
 catch(Exception $e)
 {
-	echo get_class($e).": ".$e->getMessage()."\n";
+	echo '.($is_expect_vague ? '"error"' : 'get_class($e).": ".$e->getMessage()."\n"').';
 	exit(1);
 }
 ?>

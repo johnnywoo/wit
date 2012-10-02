@@ -1,4 +1,4 @@
-# Extending WTF and technical details
+# Extending Wit and technical details
 
 ## Writing your own commands
 
@@ -35,6 +35,8 @@ literal arguments will make the compiler replace the call with its result.
 
 ??? use case: TRIM with inner block (can be computed if block starts/ends with literals)
 
+## Adding your own scalar types
+
 ## Definitions
 
 ??? more info here
@@ -43,6 +45,7 @@ literal arguments will make the compiler replace the call with its result.
  * List of known single tags like br
  * Precise description of grammar, what is allowed where (expressions, tag args, cmd args, pipelines, etc)
  * Variable name syntax (cannot start on number, etc)
+ * Number-looking strings
 
 ### Pseudo tags for input
 
@@ -55,3 +58,17 @@ Not all inputs have pseudo tags, that would be an overkill. HTML5 has 23 types!
  * hidden
  * password
  * file
+
+## Automatic tests
+
+To run all tests, from repository root execute:
+
+ 1. `./tests/blackbox2phpt` to generate phpt tests from blackbox ones
+ 2. `php pyrus.phar run-phpt -r` to run all phpt tests
+
+Pyrus can be obtained from PEAR2: http://pear2.php.net/
+
+### Blackbox tests
+
+Blackbox tests located in `tests/blackbox` are independent of implementation.
+If you're writing your own Wit compiler, those tests will help you.
