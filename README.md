@@ -1,6 +1,6 @@
 # Wit is a template engine
 
-Wit combines syntax elements of shell script, python, haml, css and sql.
+Wit combines syntax elements of shell script, haml, css and sql.
 It's a template language with static typing. It's awesome.
 
 Pros:
@@ -12,9 +12,18 @@ Pros:
 
 Cons:
 
- * There is a learning curve;
- * You don't want to write your blog posts in it: Wit is designed specifically
-   for _templates_.
+ * There is a learning curve.
+
+## DISCLAIMER
+
+Actually, this is just a concept of a decent template language I wrote up because
+I was extremely frustrated with piles upon piles of template languages that suck
+so very embarassingly much. I'd love to complete the Wit spec and write 
+a reference implementation, but sadly I haven't got any projects needing HTML templates.
+If an opportunity arises, I will resume working on Wit.
+
+You can still read the rant in `docs/why.md`. Other documents are only sketches, 
+although you can get the idea of the language from them.
 
 ## Overview
 
